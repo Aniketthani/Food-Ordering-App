@@ -1,0 +1,40 @@
+#: import dp kivy.metrics.dp
+<LoginScreen>
+
+    MDBoxLayout:
+        orientation: 'vertical'
+        spacing:dp(20)
+        MDToolbar:
+            title:"Login"
+
+        Image:
+            source:"images/food.png"
+            size_hint: 0.7,0.4 
+            pos_hint: {'center_x':0.5 , 'center_y':0.5 }
+
+        MDTextFieldRound:
+            hint_text:"Phone Number"
+            icon_right:'cellphone'
+            size_hint_x: 0.7
+            pos_hint: {'center_x':0.5 , 'center_y':0.5 }
+
+        MDTextFieldRound:
+            hint_text:"Password"
+            password:True
+            icon_right:'eye-off'
+            size_hint_x: 0.7
+            pos_hint: {'center_x':0.5 , 'center_y':0.5 }
+
+        MDRaisedButton:
+            text:"Login"
+            pos_hint: {'center_x':0.5 , 'center_y':0.5 }
+
+        
+        MDFlatButton:
+            text:"Register"
+            pos_hint:{'center_x':0.5 , 'center_y':0.5 }
+            theme_text_color:"Custom"
+            text_color:(0,0,1,1)
+            on_release: root.parent.current="register"
+
+            

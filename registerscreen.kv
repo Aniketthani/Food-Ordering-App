@@ -1,0 +1,66 @@
+#: import dp kivy.metrics.dp
+<RegisterScreen>
+   
+    MDBoxLayout:
+        orientation: 'vertical'
+        spacing:dp(20)
+        MDToolbar:
+            title:"Register"
+        Widget:
+            size_hint_y:0.1
+        MDTextFieldRound:
+            hint_text:"Name"
+            icon_right:'account-box'
+            size_hint_x: 0.7
+            pos_hint: {'center_x':0.5 , 'center_y':0.5 }
+        
+        MDTextFieldRound:
+            hint_text:"Phone Number"
+            icon_right:'cellphone'
+            size_hint_x: 0.7
+            pos_hint: {'center_x':0.5 , 'center_y':0.5 }
+        
+        MDTextFieldRound:
+            hint_text:"Address"
+            icon_right:'book'
+            size_hint_x: 0.7
+            pos_hint: {'center_x':0.5 , 'center_y':0.5 }
+
+        MDTextFieldRound:
+            hint_text:"City"
+            icon_right:'home-city'
+            size_hint_x: 0.7
+            pos_hint: {'center_x':0.5 , 'center_y':0.5 }
+
+        MDTextFieldRound:
+            hint_text:"State"
+            icon_right:'city-variant'
+            size_hint_x: 0.7
+            pos_hint: {'center_x':0.5 , 'center_y':0.5 }
+
+        MDTextFieldRound:
+            hint_text:"Pincode"
+            icon_right:'airballoon'
+            size_hint_x: 0.7
+            pos_hint: {'center_x':0.5 , 'center_y':0.5 }
+
+        MDTextFieldRound:
+            hint_text:"Password"
+            password:True
+            icon_right:'eye-off'
+            size_hint_x: 0.7
+            pos_hint: {'center_x':0.5 , 'center_y':0.5 }
+
+        MDRaisedButton:
+            text:"Register"
+            pos_hint: {'center_x':0.5 , 'center_y':0.5 }
+
+        
+        MDFlatButton:
+            text:"Login"
+            pos_hint:{'center_x':0.5 , 'center_y':0.5 }
+            theme_text_color:"Custom"
+            text_color:(0,0,1,1)
+            on_release: root.parent.current="login"
+
+            
