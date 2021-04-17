@@ -1,0 +1,93 @@
+#: import dp  kivy.metrics.dp
+<Register_Restaurant_Screen>
+    MDBoxLayout:
+        orientation: 'vertical'
+        spacing:dp(20)
+        #size_hint_y:1
+        #on_minimum_height:self.setter('height')
+        MDToolbar:
+            title:"Restaurant Registeration"
+        MDLabel:
+            id:message
+            text:""
+            theme_text_color:"Custom"
+            text_color:(0,0,0,1)
+            size_hint_y:0.1
+            halign:'center'
+            markup:True
+        MDTextFieldRound:
+            id:name
+            size_hint_y:0.1
+            hint_text:"Restaurant Name"
+            icon_right:'account-box'
+            size_hint_x: 0.7
+            pos_hint: {'center_x':0.5 , 'center_y':0.5 }
+            write_tab:False
+
+        MDTextFieldRound:
+            id:mobile
+            size_hint_y:0.1
+            hint_text:"Phone Number"
+            icon_right:'cellphone'
+            size_hint_x: 0.7
+            pos_hint: {'center_x':0.5 , 'center_y':0.5 }
+            write_tab:False
+
+        MDTextFieldRound:
+            id:address
+            size_hint_y:0.1
+            hint_text:"Address"
+            icon_right:'book'
+            size_hint_x: 0.7
+            pos_hint: {'center_x':0.5 , 'center_y':0.5 }
+            write_tab:False
+
+        MDTextFieldRound:
+            id:city
+            size_hint_y:0.1
+            hint_text:"City"
+            icon_right:'home-city'
+            size_hint_x: 0.7
+            pos_hint: {'center_x':0.5 , 'center_y':0.5 }
+            write_tab:False
+
+        MDTextFieldRound:
+            id:state
+            size_hint_y:0.1
+            hint_text:"State"
+            icon_right:'city-variant'
+            size_hint_x: 0.7
+            pos_hint: {'center_x':0.5 , 'center_y':0.5 }
+            write_tab:False
+
+        MDTextFieldRound:
+            id:pincode
+            size_hint_y:0.1
+            hint_text:"Pincode"
+            icon_right:'airballoon'
+            size_hint_x: 0.7
+            pos_hint: {'center_x':0.5 , 'center_y':0.5 }
+            write_tab:False
+
+        MDTextFieldRound:
+            id:password
+            size_hint_y:0.1
+            hint_text:"Password"
+            password:True
+            icon_right:'eye-off'
+            size_hint_x: 0.7
+            pos_hint: {'center_x':0.5 , 'center_y':0.5 }
+            write_tab:False
+
+        MDRaisedButton:
+            text:"Register"
+            pos_hint: {'center_x':0.5 , 'center_y':0.5 }
+            on_release:root.register()
+
+
+        MDFlatButton:
+            text:"Login"
+            pos_hint:{'center_x':0.5 , 'center_y':0.5 }
+            theme_text_color:"Custom"
+            text_color:(0,0,1,1)
+            on_release: root.nav_to_login()
