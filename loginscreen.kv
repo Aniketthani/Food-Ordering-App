@@ -19,6 +19,7 @@
                 pos_hint: {'center_x':0.5 , 'center_y':0.5 }
 
             MDTextFieldRound:
+                id:mobile
                 hint_text:"Phone Number"
                 icon_right:'cellphone'
                 size_hint_x: 0.7
@@ -26,6 +27,7 @@
                 write_tab:False
 
             MDTextFieldRound:
+                id:password
                 hint_text:"Password"
                 password:True
                 icon_right:'eye-off'
@@ -36,6 +38,7 @@
             MDRaisedButton:
                 text:"Login"
                 pos_hint: {'center_x':0.5 , 'center_y':0.5 }
+                on_release:root.login()
 
 
             MDFlatButton:
@@ -52,4 +55,12 @@
                 text_color:(0,0,1,1)
                 on_release: root.parent.current="register_restaurant"
 
+            MDLabel:
+                id:message
+                text:""
+                theme_text_color:"Custom"
+                text_color:(0,0,0,1)
+                size_hint_y:0.1
+                halign:'center'
+                markup:True
             

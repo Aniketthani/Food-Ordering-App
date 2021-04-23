@@ -1,0 +1,156 @@
+<ContentNavigationDrawer>:
+
+    orientation: "vertical"
+    padding: "8dp"
+    spacing: "8dp"
+
+    AnchorLayout:
+        anchor_x: "left"
+        size_hint_y: None
+        height: avatar.height
+
+        Image:
+            id: avatar
+            size_hint: None, None
+            size: "56dp", "56dp"
+            source: "images/food.png"
+
+    MDLabel:
+        text: root.parent.parent.parent.r_name
+        font_style: "Button"
+        size_hint_y: None
+        height: self.texture_size[1]
+        theme_text_color:"Custom"
+        text_color:(0.24,0.26,0.38,1)
+
+    MDLabel:
+        text: root.parent.parent.parent.Id
+        font_style: "Caption"
+        size_hint_y: None
+        height: self.texture_size[1]
+        
+
+    ScrollView:
+
+        MDList:
+            spacing:10
+            padding:0
+            OneLineIconListItem:
+                text: "Add Food Item"
+                theme_text_color:"Custom"
+                text_color:(1,0.8,0.24,1)
+                font_style:"H6"
+                bg_color:(0.2,0.2,0.444,1)
+                on_press:
+                    root.nav_drawer.set_state("close")
+                    root.screen_manager.current = "add_food_item"
+                IconLeftWidget:
+                    icon: "language-python"
+                    theme_text_color:"Custom"
+                    text_color:(0,0.58,0.3,1)
+                
+
+            OneLineIconListItem:
+                text: "Screen 2"
+                theme_text_color:"Custom"
+                text_color:(1,0.8,0.24,1)
+                font_style:"H6"
+                bg_color:(0.2,0.2,0.444,1)
+                on_press:
+                    root.nav_drawer.set_state("close")
+                    root.screen_manager.current = "scr 2"
+                IconLeftWidget:
+                    icon: "language-python"
+                    theme_text_color:"Custom"
+                    text_color:(0,0.58,0.3,1)
+                
+
+
+<Restaurant_Screen>
+
+    MDToolbar:
+        id: toolbar
+        pos_hint: {"top": 1}
+        elevation: 10
+        title: root.r_name
+        left_action_items: [["menu", lambda x: nav_drawer.set_state("open"),"Office Menu"]]
+        right_action_items:[["logout",lambda x:x,"Logout"]]
+        
+        
+            
+    MDNavigationLayout:
+        x: toolbar.height
+
+        ScreenManager:
+            id: screen_manager
+
+            Screen:
+                name: "add_food_item"
+
+                
+                MDBoxLayout:
+                    spacing:"10dp"
+                    padding:"10dp"
+                    orientation:'vertical'
+                    Widget:
+                        size_hint_y:0.12
+                    MDLabel:
+                        text: "Add Food Item"
+                        halign: "center"
+                        font_style:"H5"
+                        theme_text_color:"Custom"
+                        text_color:(1,0,0,1)
+                        size_hint:(1,0.1)
+                    MDTextField:
+                        hint_text: "Food Name"
+                        size_hint_x:0.7
+                        pos_hint:{'center_x':0.5}
+                    MDTextField:
+                        hint_text: "Description"
+                        size_hint_x:0.7
+                        pos_hint:{'center_x':0.5}
+
+                    MDTextField:
+                        hint_text: "Price"
+                        size_hint_x:0.7
+                        pos_hint:{'center_x':0.5}
+
+                    GridLayout:
+                        size_hint_y:0.1
+                        size_hint_x:0.7
+                        pos_hint:{'center_x':0.5}
+                        cols:4
+                        CheckBox:
+                            id:veg
+                            group:'Veg'
+                            color:(1,0,0,1)
+                            size_hint_x:0.2
+                            on_active:root.veg_radio_selection(is_veg=True)
+                        MDLabel:
+                            text:"Veg"
+                            size_hint_x:0.3
+                        CheckBox:
+                            id:nonveg
+                            group:'Veg'
+                            color:(1,0,0,1)
+                            size_hint_x:0.2
+                            on_active:root.veg_radio_selection(is_veg=False)
+                        MDLabel:
+                            text:"Nonveg"
+                            size_hint_x:0.3
+                    
+
+
+            Screen:
+                name: "scr 2"
+
+                MDLabel:
+                    text: "Screen 2"
+                    halign: "center"
+
+        MDNavigationDrawer:
+            id: nav_drawer
+
+            ContentNavigationDrawer:
+                screen_manager: screen_manager
+                nav_drawer: nav_drawer
