@@ -1,0 +1,37 @@
+<Delete_Food_Item_Screen>
+
+    #MDTextFieldRound:
+        #hint_text:"Search Food Item"
+        #icon_left:'magnify'
+#
+        #size_hint_x: 0.5 
+        #pos_hint: {'center_x':0.5  }
+    Widget:
+        size_hint_y: 0.1
+    MDBoxLayout:
+        orientation: 'vertical'
+        size_hint_y: 0.9
+        MDBoxLayout:
+            orientation: 'horizontal'
+            #adaptive_height:True
+            size_hint: 0.8,0.1 
+
+
+
+            MDIconButton:
+                icon:"magnify"
+            MDTextField:
+                id:search_text
+                hint_text:"Search Food Item"
+                on_text: root.search_food(self.text)
+
+        ScrollView:
+            
+            MDList:
+                
+                id:food_list
+                
+                
+
+        
+        

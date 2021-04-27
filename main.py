@@ -8,6 +8,11 @@ from kivy.uix.screenmanager import ScreenManager
 from register_for_restaurants_screen import Register_Restaurant_Screen
 from userscreen import User_Screen
 from restaurantscreen import Restaurant_Screen
+try:
+    from android.permissions import request_permissions, Permission
+    request_permissions([Permission.WRITE_EXTERNAL_STORAGE, Permission.READ_EXTERNAL_STORAGE])
+except:
+    pass
 
 
 class MainApp(MDApp):

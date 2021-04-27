@@ -24,7 +24,7 @@ class LoginScreen(Screen):
 
         self.parent.current="restaurantscreen"
         self.parent.restaurantscreen.r_name=name
-        self.parent.restaurantscreen.Id="Id: "+str(Id)
+        self.parent.restaurantscreen.Id=str(Id)
 
     def login(self,*args):
         self.ids.message.text=""
