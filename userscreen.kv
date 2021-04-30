@@ -1,1 +1,117 @@
+<MyCard>
+    canvas.before:
+        Color:
+            rgba:(0.9,0,0.2,1)
+            #rgba:(1,0.2,0.2,1)
+        RoundedRectangle:
+            size:self.size[0]-10,self.size[1]-10
+            pos:self.pos
+            radius:[10,10,10,10]       
+
+
+<FoodCard>
+    canvas.before:
+        Color:
+            rgba:(0.93,0.28,0.28,1)
+        RoundedRectangle:
+            size:self.size[0]-10,self.size[1]-10
+            pos:self.pos
+            radius:[10,10,10,10]            
+            
+
+    
+
 <User_Screen>
+    
+    
+
+    BoxLayout:
+        orientation:'vertical'
+        
+        
+
+        MDBottomNavigation:
+            panel_color: .09, .092, .39, 1
+            text_color_normal:(0.99,0.99,0.99,1)
+            MDBottomNavigationItem:
+                name: 'order'
+                text: 'Order'
+                icon: 'shopping-outline'
+                on_tab_release:root.display_restaurants()
+                
+                ScreenManager:
+                    id:orders_sm
+                    
+                    Screen:
+                        name:"restaurant"
+
+                        BoxLayout:
+                            orientation: 'vertical'
+                            Widget:
+                                size_hint_y: 0.01
+                            MDTextFieldRound:
+                                id:search_food_res
+                                hint_text:"Search for Food,Restaurants"
+                                icon_left: 'magnify'
+                                pos_hint: {'center_x':0.5,'top':0.99 }
+                                size_hint_x: 0.8
+                                font_size:"22sp"
+                                on_text: root.search(self.text)
+
+                            ScrollView:
+
+                                MDList:
+
+                                    id:res_food_list
+
+                    Screen:
+                        name:"food_menu"
+                        MDIconButton:
+                            icon: "backburger"
+                            theme_text_color: "Custom"
+                            text_color: (0,0,1,1)
+                            pos_hint:{'top':1,'left':1}
+                            on_release:root.navigate_back(self.parent.name)
+                        
+                        
+                        
+                        ScrollView:
+                            pos_hint:{'top':0.95}
+                            MDList:
+                                id:food_menu
+
+                    Screen:
+                        name:"submenu"
+                        MDIconButton:
+                            icon: "backburger"
+                            theme_text_color: "Custom"
+                            text_color: (0,0,1,1)
+                            pos_hint:{'top':1,'left':1}
+                            on_release:root.navigate_back(self.parent.name)
+                        
+                        ScrollView:
+                            pos_hint:{'top':0.95}
+                            MDList:
+                                id:submenu
+
+
+
+            MDBottomNavigationItem:
+                name: 'history'
+                text: 'History'
+                icon: 'book-open-variant'
+
+                MDLabel:
+                    text: 'I programming of C++'
+                    halign: 'center'
+
+            MDBottomNavigationItem:
+                name: 'account'
+                text: 'Account'
+                icon: 'account'
+
+                MDLabel:
+                    text: 'JS'
+                    halign: 'center'
+
+    

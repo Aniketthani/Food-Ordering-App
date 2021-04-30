@@ -34,24 +34,25 @@ class Restaurant_Screen(Screen):
 
     
     def load_dropdown_items(self,*args):
+        mydb.commit()
         sql="Select Category from food_categories"
         cursor.execute(sql)
         self.item_list=cursor.fetchall()
         self.item_selected=""
-        mydb.commit()
+        
 
         self.menu_items = [
             {
                 "viewclass": "OneLineIconListItem",
-                "height": dp(56),
+                
                 "text": f"{i[0]}",
                 "on_release": lambda x=f"{i[0]}": self.set_item(x),
             } for i in self.item_list]
         self.menu = MDDropdownMenu(
             caller=self.ids.field,
             items=self.menu_items,
-            position="bottom",
-            width_mult=5,
+            position="center",
+            width_mult=7,
         )
         
     def set_item(self, text__item):

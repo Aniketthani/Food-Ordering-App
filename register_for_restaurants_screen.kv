@@ -76,8 +76,15 @@
             password:True
             icon_right:'eye-off'
             size_hint_x: 0.7
-            pos_hint: {'center_x':0.5 , 'center_y':0.5 }
+            pos_hint: {'center_x':0.5  }
             write_tab:False
+
+        MDRoundFlatIconButton:
+            id:choose_image_button
+            text: "Choose Image"
+            icon: "folder"
+            pos_hint: {'center_x': .5}
+            on_release: root.file_manager_open()
 
         MDRaisedButton:
             text:"Register"
