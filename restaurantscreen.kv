@@ -1,5 +1,6 @@
 #: import Edit_Food_Item_Screen edit_food_item_screen.Edit_Food_Item_Screen
 #: import Delete_Food_Item_Screen delete_food_item_screen.Delete_Food_Item_Screen
+
 <ContentNavigationDrawer>:
 
     orientation: "vertical"
@@ -37,6 +38,42 @@
         MDList:
             spacing:10
             padding:0
+
+            OneLineIconListItem:
+                id:order_screen
+                text: "Orders"
+                theme_text_color:"Custom"
+                text_color:(1,0.8,0.24,1)
+                font_style:"H6"
+                bg_color:(0.2,0.2,0.444,1)
+                on_press:
+                    root.nav_drawer.set_state("close")
+                    root.screen_manager.current = "order_screen"
+                    root.parent.parent.parent.load_order_list()
+
+                IconLeftWidget:
+                    icon: "language-python"
+                    theme_text_color:"Custom"
+                    text_color:(0,0.58,0.3,1)
+            
+            OneLineIconListItem:
+                id:disptached_orders
+                text: "Dispatched Orders"
+                theme_text_color:"Custom"
+                text_color:(1,0.8,0.24,1)
+                font_style:"H6"
+                bg_color:(0.2,0.2,0.444,1)
+                on_press:
+                    root.nav_drawer.set_state("close")
+                    root.screen_manager.current = "dispatched_orders"
+                    root.parent.parent.parent.load_dispatched_order_list(False)
+
+                IconLeftWidget:
+                    icon: "language-python"
+                    theme_text_color:"Custom"
+                    text_color:(0,0.58,0.3,1)
+
+
             OneLineIconListItem:
                 id:add_food_item_screen
                 text: "Add Food Item"
@@ -89,13 +126,15 @@
 
 <Restaurant_Screen>
 
+    
+
     MDToolbar:
         id: toolbar
         pos_hint: {"top": 1}
         elevation: 10
         title: root.r_name
         left_action_items: [["menu", lambda x: nav_drawer.set_state("open"),"Office Menu"]]
-        right_action_items:[["logout",lambda x:x,"Logout"]]
+        right_action_items:[["logout",lambda x:root.logout(),"Logout"]]
         
         
             
@@ -104,6 +143,108 @@
 
         ScreenManager:
             id: screen_manager
+            
+            Screen:
+                name: "order_screen"
+
+                MDChip:
+                    text:"Orders"
+                    icon:"book-open-variant"
+                    color:(0,0,0.83,1)
+                    theme_text_color:"Custom"
+                    text_color:(1,1,1,1)
+                    font_style:"Button"
+                    bold:True
+                    pos_hint:{'top':0.88,'center_x':0.5}
+                    icon_color:(0.8,0.8,0.8,1)
+
+                ScrollView:
+                    pos_hint:{'top':0.78}
+                    MDList:
+                        
+                        id:order_list
+
+            
+            Screen:
+                name: "dispatched_orders"
+
+                MDChip:
+                    text:"Dispatched Orders"
+                    icon:"book-open-page-variant-outline"
+                    color:(0,0,0.83,1)
+                    theme_text_color:"Custom"
+                    text_color:(1,1,1,1)
+                    font_style:"Button"
+                    bold:True
+                    pos_hint:{'top':0.88,'center_x':0.5}
+                    icon_color:(0.8,0.8,0.8,1)
+                
+                MDRectangleFlatIconButton:
+                    id:choose_date_btn
+                    icon:"calendar-edit"
+                    text:"Choose Date"
+                    pos_hint:{'top':0.8,'right':0.4}
+                    on_release:root.parent.datepicker.open()
+                
+                MDRaisedButton:
+                    text:"Submit"
+                    pos_hint:{'top':0.8,'right':0.8}
+                    on_release:root.load_dispatched_order_list(from_sub_btn=True)
+
+                ScrollView:
+                    pos_hint:{'top':0.75}
+                    MDList:
+                        
+                        id:dispatched_order_list
+
+
+            Screen:
+                name:"particular_order_screen"
+                id:particular_order_screen
+                
+                MDIconButton:
+                    id:backbtn
+                    icon:"backburger"
+                    theme_text_color: "Custom"
+                    text_color: (0,0,1,1)
+                    pos_hint:{'top':0.9,'left':1}
+                    on_release:root.ids.screen_manager.current="order_screen"
+
+                MDRaisedButton:
+                    id:dispatch_order_btn
+                    text:"Dispatch Order"
+                    pos_hint:{'top':0.88,'right':0.9}
+                    
+
+                MDCard:
+                    orientation:"vertical"
+                    padding:10,0
+                    elevation:30
+                    size_hint:1,0.2
+                    pos_hint:{'top':0.8}
+                    canvas.before:
+                        Color:
+                            rgba:(0.88,0.2,0,0.7)
+                        Rectangle:
+                            pos:self.pos
+                            size:self.size
+                    MDLabel:
+                        id:order_header_details
+                        text:""
+                        markup:True
+                        font_style:"Button"
+                        
+                MDChip:
+                    id:total_bill
+                    text:""
+                    icon:""
+                    md_bg_color:(0.88,0.2,0,0.7)
+                    pos_hint:{'top':0.58,'center_x':0.5}
+                    font_style:"H6"
+                
+                    
+
+                    
 
             Screen:
                 name: "add_food_item"

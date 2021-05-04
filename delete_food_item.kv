@@ -10,12 +10,21 @@
         size_hint_y: 0.1
     MDBoxLayout:
         orientation: 'vertical'
-        size_hint_y: 0.9
+        size_hint_y: 0.88
+        MDChip:
+            text:"Delete Food Item"
+            icon:""
+            color:(0,0,1,1)
+            theme_text_color:"Custom"
+            text_color:(1,1,1,1)
+            pos_hint:{'center_x':0.5,'top':1}
+        Widget:
+            size_hint:1,0.05
         MDBoxLayout:
             orientation: 'horizontal'
             #adaptive_height:True
             size_hint: 0.8,0.1 
-
+            
 
 
             MDIconButton:

@@ -10,11 +10,17 @@ from config import connect_to_database
 from edit_food_item_screen import Edit_Food_Item_Screen
 from kivymd.uix.menu import MDDropdownMenu
 from kivy.metrics import dp
+from datetime import datetime
+from kivymd.uix.list import OneLineAvatarIconListItem,IconLeftWidget
+from functools import partial
+from datatables import MDDataTable
+from kivy.clock import Clock
 try:
     from android.storage import primary_external_storage_path
     primary_ext_storage = primary_external_storage_path()
 except:
     primary_ext_storage="/"
+
 
 
 cursor,mydb=connect_to_database()
@@ -31,9 +37,155 @@ class Restaurant_Screen(Screen):
     veg=True
     item_list=[]
     item_selected=""
-
     
+    def __init__(self,**kwargs):
+        super(Restaurant_Screen,self).__init__(**kwargs)
+        Window.bind(on_keyboard=self.events)
+        self.manager_open = False
+        self.image_path=""
+        self.file_manager = MDFileManager(
+            exit_manager=self.exit_manager,
+            select_path=self.select_path,
+            preview=True,
+        )
+
+        self.load_dropdown_items()
+    
+    def logout(self,*args):
+        self.parent.current="login"
+        with open("session.txt","w") as f:
+            f.write("")
+            f.close()
+
+    def save_date(self,instance, value, date_range):
+        self.ids.choose_date_btn.text=str(value)
+
+    def cancel_date(self, instance, value):
+        instance.dismiss()
+    
+    def load_dispatched_order_list(self,from_sub_btn,*args):
+        if not from_sub_btn:
+            self.ids.choose_date_btn.text="Choose Date"
+            self.ids.dispatched_order_list.clear_widgets()
+        if self.ids.choose_date_btn.text!="Choose Date" and from_sub_btn:
+            mydb.commit()
+            
+        
+            sql=f"Select * from orders Where Restaurant_Id='{self.Id}' and Date='{self.ids.choose_date_btn.text}' and Dispatched='1'"
+
+            cursor.execute(sql)
+            res=cursor.fetchall()
+
+            self.ids.dispatched_order_list.clear_widgets()
+            for order in res:
+                item=OneLineAvatarIconListItem(text=f"Order No : {order[0]}",on_release=partial(self.show_order_details,order,True))
+                item.add_widget(IconLeftWidget(icon="receipt"))
+                self.ids.dispatched_order_list.add_widget(item)
+        elif self.ids.choose_date_btn.text=="Choose Date" and from_sub_btn:
+            
+            toast("Please select date")
+            self.ids.dispatched_order_list.clear_widgets()
+    
+
+
+
+        
+    def load_order_list(self,*args):
+        mydb.commit()
+        date=datetime.now().strftime("%Y-%m-%d")
+        
+        sql=f"Select * from orders Where Restaurant_Id='{self.Id}' and Date='{date}' and Dispatched='0'"
+
+        cursor.execute(sql)
+        res=cursor.fetchall()
+
+        self.ids.order_list.clear_widgets()
+        for order in res:
+            item=OneLineAvatarIconListItem(text=f"Order No : {order[0]}",on_release=partial(self.show_order_details,order,False))
+            item.add_widget(IconLeftWidget(icon="receipt"))
+            self.ids.order_list.add_widget(item)
+        
+        Clock.schedule_once(self.load_order_list,5)
+
+    def show_order_details(self,order,dispatched,*args):
+        self.ids.screen_manager.current="particular_order_screen"
+        sql=f"Select * from users where Id='{order[8]}'"
+        cursor.execute(sql)
+        res=cursor.fetchall()[0]
+
+        self.ids.order_header_details.text=f"""ONO : {order[0]}  Customer : {res[3]} \n Mobile : {res[4]}  Address : {res[6]}\n
+City : {res[7]}  State : {res[8]} \n Pincode : {res[9]}"""
+
+        self.ids.total_bill.text=f"Total : Rs {order[7]}"
+        
+        f_items=tuple(order[5].split("-"))
+        f_quantity=order[6].split("-")
+
+        if len(f_items)==1:
+            sql=f"Select F_Name,Price from food_items Where F_Id='{f_items[0]}' "
+        else:
+            sql=f"Select F_Name,Price from food_items Where F_Id In {f_items}"
+
+        cursor.execute(sql)
+        res=cursor.fetchall()
+
+        rows=[]
+        
+        for i in range(len(f_items)):
+            t=(res[i][0],res[i][1],f_quantity[i],int(res[i][1])*int(f_quantity[i]))
+            rows.append(t)
+        rows.append(("","","",""))
+
+
+
+
+
+        try:
+            self.ids.particular_order_screen.remove_widget(self.ordertable)
+        except:
+            pass
+        self.ordertable=MDDataTable(size_hint=(0.9,0.5),column_data=[
+                ("Food", dp(20)),
+                ("Price", dp(15)),
+                
+                ("Quantity", dp(15)),
+                ("Total", dp(15)),
+                
+            ],
+            pos_hint={'top':0.5,'center_x':0.5},row_data=rows
+            )
+        self.ids.particular_order_screen.add_widget(self.ordertable)
+
+        if not  dispatched:
+            self.ids.dispatch_order_btn.disabled=False
+
+            self.ids.dispatch_order_btn.on_release=partial(self.dispatch_order,order[0])
+            self.ids.backbtn.on_release=partial(self.back_navigate,"order_screen")
+        else:
+            self.ids.dispatch_order_btn.disabled=True
+
+            self.ids.backbtn.on_release=partial(self.back_navigate,"dispatched_orders")
+    
+    def back_navigate(self,screen,*args):
+        self.ids.screen_manager.current=screen
+
+    def dispatch_order(self,ono,*args):
+        sql=f"Update orders set Dispatched='1' Where ONO='{ono}'"
+        cursor.execute(sql)
+        mydb.commit()
+        self.ids.dispatch_order_btn.disabled=True
+        self.ids.screen_manager.current="order_screen"
+        toast(f"Order No {ono} dispatched successfully")
+        
+
     def load_dropdown_items(self,*args):
+        self.ids.f_name.text=""
+        self.ids.f_desc.text=""
+        self.ids.f_price.text=""
+        self.ids.field.text="Category"
+        self.ids.file_manager_button.text="Choose Image"
+        self.image_path=""
+        self.ids.veg.active=True
         mydb.commit()
         sql="Select Category from food_categories"
         cursor.execute(sql)
@@ -61,18 +213,7 @@ class Restaurant_Screen(Screen):
         self.menu.dismiss()
 
 
-    def __init__(self,**kwargs):
-        super(Restaurant_Screen,self).__init__(**kwargs)
-        Window.bind(on_keyboard=self.events)
-        self.manager_open = False
-        self.image_path=""
-        self.file_manager = MDFileManager(
-            exit_manager=self.exit_manager,
-            select_path=self.select_path,
-            preview=True,
-        )
-
-        self.load_dropdown_items()
+    
 
 
     #def search_category(self,text,*args):
@@ -182,8 +323,5 @@ class Restaurant_Screen(Screen):
         
 
 
-class MainApp(MDApp):
-    def build(self):
-        return Restaurant_Screen()
 
-#MainApp().run()
+

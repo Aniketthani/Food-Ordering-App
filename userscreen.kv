@@ -17,13 +17,70 @@
             size:self.size[0]-10,self.size[1]-10
             pos:self.pos
             radius:[10,10,10,10]            
-            
+<CartCard>
+    canvas.before:
+        Color:
+            rgba:(0.9,0,0.2,1)
+            #rgba:(1,0.2,0.2,1)
+        RoundedRectangle:
+            size:self.size[0],self.size[1]
+            pos:self.pos
+            radius:[10,10,10,10] 
 
+<Quantity_Input>
+
+    cols:2
+    spacing:10
+    size_hint:None,None
+    size:"200dp","50dp"
+    pos_hint:{'center_x':0.5,'center_y':0.5}
+
+    
+
+    MDTextField:
+        id:quantity
+        hint_text:"Quantity"
+        readonly:True
+        
+        mode:"rectangle"
+    GridLayout:
+        cols:2
+        
+        
+        MDIconButton:
+            id:increment_btn
+            icon:"arrow-up-circle"
+            on_release:app.root.children[0].change_quantity(1,root)
+            
+        MDIconButton:
+            id:decrement_btn
+            icon:"arrow-down-circle"
+            on_release:app.root.children[0].change_quantity(-1,root)
+
+<Dialog_Content>
+    orientation: "vertical"
+    spacing: "12dp"
+    size_hint_y: None
+    height: "200dp"
+
+    MDLabel:
+        markup:True
+        id:fo_name
+        text:""
+    MDLabel:
+        markup:True
+        id:fo_price
+        text:""
+    Quantity_Input:
+        id:quantity_input
+
+
+    
     
 
 <User_Screen>
     
-    
+    id:userscreen
 
     BoxLayout:
         orientation:'vertical'
@@ -31,6 +88,7 @@
         
 
         MDBottomNavigation:
+            id:bottom_nav
             panel_color: .09, .092, .39, 1
             text_color_normal:(0.99,0.99,0.99,1)
             MDBottomNavigationItem:
@@ -41,25 +99,40 @@
                 
                 ScreenManager:
                     id:orders_sm
+
                     
                     Screen:
                         name:"restaurant"
 
                         BoxLayout:
                             orientation: 'vertical'
+                            
                             Widget:
                                 size_hint_y: 0.01
-                            MDTextFieldRound:
-                                id:search_food_res
-                                hint_text:"Search for Food,Restaurants"
-                                icon_left: 'magnify'
+                            BoxLayout:
+                                orientation: 'horizontal'
                                 pos_hint: {'center_x':0.5,'top':0.99 }
-                                size_hint_x: 0.8
-                                font_size:"22sp"
-                                on_text: root.search(self.text)
-
+                                size_hint:(1,0.07)
+                                padding: 20,0
+                                spacing:20
+                                MDTextFieldRound:
+                                    id:search_food_res
+                                    hint_text:"Search for Food,Restaurants"
+                                    icon_left: 'magnify'
+                                    pos_hint: {'top':1,'left':0.9 }
+                                    
+                                    
+                                    font_size:"25sp"
+                                    on_text: root.search(self.text)
+                                
+                                MDIconButton:
+                                    icon:"cart"
+                                    pos_hint: {'top':1 }
+                                    
+                                    on_release:root.show_cart_screen()
+                                    
                             ScrollView:
-
+                                size_hint:(1,0.8)
                                 MDList:
 
                                     id:res_food_list
@@ -74,11 +147,21 @@
                             on_release:root.navigate_back(self.parent.name)
                         
                         
+
                         
                         ScrollView:
                             pos_hint:{'top':0.95}
                             MDList:
                                 id:food_menu
+                        MDFloatingActionButton:
+                            icon:"cart-outline"
+                            pos_hint:{'top':0.3,'right':0.9}
+                            
+                            md_bg_color: (0,0.32,0.9,1)
+                            on_release:
+                                root.ids.orders_sm.current="cart"
+                                root.show_cart_screen()
+
 
                     Screen:
                         name:"submenu"
@@ -94,6 +177,48 @@
                             MDList:
                                 id:submenu
 
+                        MDFloatingActionButton:
+                            icon:"cart-outline"
+                            pos_hint:{'top':0.3,'right':0.9}
+                            
+                            md_bg_color: (0,0.32,0.9,1)
+                            on_release:
+                                root.ids.orders_sm.current="cart"
+                                root.show_cart_screen()
+                        
+
+                    Screen: 
+                        name:"cart"
+                        id:cart_screen
+                        MDIconButton:
+                            icon: "backburger"
+                            theme_text_color: "Custom"
+                            text_color: (0,0,1,1)
+                            pos_hint:{'top':1,'left':1}
+                            on_release:root.navigate_back(self.parent.name)
+                        MDRaisedButton:
+                            id:place_order_btn
+                            text:"Place Order"
+                            pos_hint:{'top':0.98,"right":0.99}
+                            disabled:True
+                            on_release:root.place_order_confirm_dialog.open()
+                        
+                        MDChip:
+    
+                            color: 0.93, 0.5, 0, 1
+                            text:"Total : Rs 0 "
+                            markup:True
+                            id:cart_total
+                            pos_hint:{'top':0.98,"center_x":0.4}
+                            icon:""
+                            #size_hint:0.3,0.07
+                        ScrollView:
+                            pos_hint:{'top':0.93}
+                            size_hint:(1,0.9)
+                            MDList:
+                                id:cart_items
+                                
+                        
 
 
             MDBottomNavigationItem:
@@ -101,17 +226,130 @@
                 text: 'History'
                 icon: 'book-open-variant'
 
-                MDLabel:
-                    text: 'I programming of C++'
-                    halign: 'center'
+                on_tab_release:root.show_previous_orders()
+
+                ScreenManager:
+                    id:history_manager
+
+                    Screen:
+                        name: "previous_order_screen"
+
+                        MDChip:
+                            text:"Previous Orders"
+                            icon:"book-open-variant"
+                            color:(0,0,0.83,1)
+                            theme_text_color:"Custom"
+                            text_color:(1,1,1,1)
+                            font_style:"Button"
+                            bold:True
+                            pos_hint:{'top':0.99,'center_x':0.5}
+                            icon_color:(0.8,0.8,0.8,1)
+                        ScrollView:
+                            pos_hint:{'top':0.92}
+                            size_hint:(1,0.9)
+
+                            MDList:
+                                
+                                id:previous_order_list
+
+                    Screen:
+                        name:"particular_order_screen"
+                        id:particular_order_screen
+
+                        MDIconButton:
+                            id:backbtn
+                            icon:"backburger"
+                            theme_text_color: "Custom"
+                            text_color: (0,0,1,1)
+                            pos_hint:{'top':0.99,'left':1}
+                            on_release:root.ids.history_manager.current="previous_order_screen"
+
+                        MDLabel:
+                            id:dispatched_order_label
+                            text:""
+                            pos_hint:{'top':0.97,'right':0.9}
+                            size_hint:0.5,0.09
+                            theme_text_color:"Custom"
+                            text_color:(0,1,0,1)
+                            markup:True
+
+
+                        MDCard:
+                            orientation:"vertical"
+                            padding:10,0
+                            elevation:30
+                            size_hint:1,0.2
+                            pos_hint:{'top':0.84}
+                            canvas.before:
+                                Color:
+                                    rgba:(0.88,0.2,0,0.7)
+                                Rectangle:
+                                    pos:self.pos
+                                    size:self.size
+                            MDLabel:
+                                id:order_header_details
+                                text:""
+                                markup:True
+                                font_style:"Button"
+
+                        MDChip:
+                            id:total_bill
+                            text:""
+                            icon:""
+                            md_bg_color:(0.88,0.2,0,0.7)
+                            pos_hint:{'top':0.6,'center_x':0.5}
+                            font_style:"H6"
 
             MDBottomNavigationItem:
                 name: 'account'
                 text: 'Account'
                 icon: 'account'
+                on_tab_release:root.show_account_screen()
+                ScreenManager:
+                    id:account_manager
 
-                MDLabel:
-                    text: 'JS'
-                    halign: 'center'
+                    Screen:
+                        name:"account_screen"
+
+                        MDCard:
+                            orientation:"vertical"
+                            elevation:20
+                            size_hint:(1,0.25)
+                            pos_hint:{'top':1}
+                            canvas.before:
+                                Color:
+                                    rgba:(1,0,0,0.9)
+                                Rectangle:
+                                    pos:self.pos
+                                    size:self.size
+                            
+                            MDLabel:
+                                id:account_name
+                                markup:True
+                                text:""
+                                size_hint:1,0.2
+                                halign:"left"
+
+                                pos_hint:{'top':0.99}
+
+
+                        ScrollView:
+                            size_hint:(1,0.5)
+                            pos_hint:{'top':0.7}
+                            MDList:
+                                id:account_menu_list
+
+                                OneLineAvatarIconListItem:
+                                    text: "Address"
+
+                                    IconLeftWidget:
+                                        icon: "book-outline"
+                                OneLineAvatarIconListItem:
+                                    text: "Logout"
+                                    on_release:root.logout()
+
+                                    IconLeftWidget:
+                                        icon: "logout"
+
 
     

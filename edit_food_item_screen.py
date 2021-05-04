@@ -173,6 +173,7 @@ class Edit_Food_Item_Screen(Screen):
 
     def display_food_items(self,*args):
         self.ids.food_list.clear_widgets()
+        self.ids.search_text.text=""
         sql=f"Select * from food_items Where Restaurant_Id='{self.restaurant_id}'"
         cursor.execute(sql)
         res=cursor.fetchall()

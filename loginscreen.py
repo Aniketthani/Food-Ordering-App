@@ -11,12 +11,20 @@ Builder.load_file('loginscreen.kv')
 
 class LoginScreen(Screen):
 
-    def nav_to_userscreen(self,*args):
+    def nav_to_userscreen(self,u_id,u_name,*args):
         self.ids.mobile.text=""
         self.ids.password.text=""
         self.ids.message.text=""
 
         self.parent.current="userscreen"
+        self.parent.userscreen.userid=str(u_id)
+        self.parent.userscreen.username=u_name
+
+        with open("session.txt","w") as f:
+            matter=f"""{u_id}-{u_name}-u"""
+            f.write(matter)
+            f.close()
+        
     def nav_to_restaurantscreen(self,name,Id,*args):
         self.ids.mobile.text=""
         self.ids.password.text=""
@@ -25,6 +33,13 @@ class LoginScreen(Screen):
         self.parent.current="restaurantscreen"
         self.parent.restaurantscreen.r_name=name
         self.parent.restaurantscreen.Id=str(Id)
+        self.parent.restaurantscreen.load_order_list()
+        self.parent.datepicker.bind(on_save=self.parent.restaurantscreen.save_date,on_cancel=self.parent.restaurantscreen.cancel_date)
+
+        with open("session.txt","w") as f:
+            matter=f"""{Id}-{name}-r"""
+            f.write(matter)
+            f.close()
 
     def login(self,*args):
         self.ids.message.text=""
@@ -33,8 +48,9 @@ class LoginScreen(Screen):
                 mydb.commit()
                 sql=f"Select * from users Where Mobile='{self.ids.mobile.text}' and Password='{sha256(self.ids.password.text.encode()).hexdigest()}'"
                 cursor.execute(sql)
-                if cursor.fetchall()!=[]:
-                    self.nav_to_userscreen()
+                res=cursor.fetchall()
+                if res!=[]:
+                    self.nav_to_userscreen(res[0][0],res[0][3])
                 else:
                     sql=f"Select * from restaurants Where Mobile='{self.ids.mobile.text}' and Password='{sha256(self.ids.password.text.encode()).hexdigest()}'"
                     cursor.execute(sql)
