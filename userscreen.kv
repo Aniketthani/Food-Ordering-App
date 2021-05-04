@@ -341,7 +341,7 @@
 
                                 OneLineAvatarIconListItem:
                                     text: "Address"
-
+                                    on_release:root.load_address_screen()
                                     IconLeftWidget:
                                         icon: "book-outline"
                                 OneLineAvatarIconListItem:
@@ -351,5 +351,71 @@
                                     IconLeftWidget:
                                         icon: "logout"
 
+                    Screen:
+                        name:"address_screen"
 
+                        MDChip:
+                            text:"Address"
+                            icon:"book-open-outline"
+                            color:(0,0,0.83,1)
+                            theme_text_color:"Custom"
+                            text_color:(1,1,1,1)
+                            font_style:"Button"
+                            bold:True
+                            pos_hint:{'top':0.99,'center_x':0.5}
+                            icon_color:(0.8,0.8,0.8,1)
+
+                        MDIconButton:
+                            icon: "backburger"
+                            theme_text_color: "Custom"
+                            text_color: (0,0,1,1)
+                            pos_hint:{'top':1,'left':1}
+                            on_release:account_manager.current="account_screen"
+
+                        MDTextField:
+                            id:address
+                            hint_text: "Address"
+                            mode: "rectangle"
+                            icon_right: "book-edit-outline"
+                            pos_hint:{'top':0.9,'center_x':0.5}
+                            size_hint_x:0.8
+
+                        MDDropDownItem:
+                            id:state
+                            text:"State"
+
+                            size_hint_x: 0.7
+                            pos_hint: {'center_x':0.5,'top':0.7   }
+
+                            #size_hint_y:0.1
+                            on_release:root.state_menu.open()
+                        MDDropDownItem:
+                            id:city
+                            text:"City"
+
+                            size_hint_x: 0.7
+                            pos_hint: {'center_x':0.5,'top':0.5 }
+
+                            #size_hint_y:0.1
+                            on_release:root.city_menu.open()
+
+                        
+                        MDTextField:
+                            id:pincode
+                            hint_text: "Pincode"
+                            mode: "rectangle"
+                            icon_right: "balloon"
+                            pos_hint:{'top':0.4,'center_x':0.5}
+                            size_hint_x:0.65
+                        
+                        MDRaisedButton:
+                            text: "Save"
+                            pos_hint:{'top':0.2,'center_x':0.5}
+                            on_release:root.save_address()
+    
+
+                        
+                        
+                        
+                            
     

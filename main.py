@@ -9,6 +9,8 @@ from register_for_restaurants_screen import Register_Restaurant_Screen
 from userscreen import User_Screen
 from restaurantscreen import Restaurant_Screen
 from kivymd.uix.picker import MDDatePicker
+from config import connect_to_database
+from kivymd.uix.label import MDLabel
 try:
     from android.permissions import request_permissions, Permission
     request_permissions([Permission.WRITE_EXTERNAL_STORAGE, Permission.READ_EXTERNAL_STORAGE])
@@ -17,9 +19,18 @@ except:
 
 
 class MainApp(MDApp):
+    
     def build(self):
+        try:
+            cursor,mydb=connect_to_database()
+        except:
+            cursor=0
+            mydb=0
         self.theme_cls.primary_palette="Red"
         self.theme_cls.theme_style="Light"
+
+        if cursor==0 and mydb==0:
+            return MDLabel(text="No Internet Access",halign="center",font_style="H6")
 
         self.sm=ScreenManager()
         self.sm.lgscreen=LoginScreen(name='login')
@@ -46,12 +57,19 @@ class MainApp(MDApp):
                     self.sm.current="restaurantscreen"
                     self.sm.restaurantscreen.r_name=matter.split("-")[1]
                     self.sm.restaurantscreen.Id=str(matter.split("-")[0])
+                    self.sm.restaurantscreen.city=matter.split("-")[3]
+                    self.sm.restaurantscreen.state=matter.split("-")[4]
                     self.sm.restaurantscreen.load_order_list()
                     self.sm.datepicker.bind(on_save=self.sm.restaurantscreen.save_date,on_cancel=self.sm.restaurantscreen.cancel_date)
                 elif matter.split("-")[2]=="u":
                     self.sm.current="userscreen"
                     self.sm.userscreen.userid=str(matter.split("-")[0])
                     self.sm.userscreen.username=matter.split("-")[1]
+                    self.sm.userscreen.city=matter.split("-")[3]
+                    self.sm.userscreen.state=matter.split("-")[4]
+                    self.sm.userscreen.display_restaurants()
+
+                    
             
 
         

@@ -22,6 +22,7 @@ from kivy.properties import StringProperty
 from datetime import datetime,timedelta
 from datatables import MDDataTable
 from kivy.metrics import dp
+from kivymd.uix.menu import MDDropdownMenu
 
 
 
@@ -55,11 +56,41 @@ class User_Screen(Screen):
     cart={}
     edit_cart_item_dialog=None
     place_order_confirm_dialog=None
+    city=StringProperty()
+    state=StringProperty()
     def __init__(self,**kwargs):
         super(User_Screen,self).__init__(**kwargs)
         Window.bind(on_keyboard=self.events)
-        self.display_restaurants()
         
+        mydb.commit()
+        sql="Select Distinct city_state from cities"
+        cursor.execute(sql)
+        res=cursor.fetchall()
+        self.city_menu = MDDropdownMenu(
+            caller=self.ids.city,
+            items=[],
+            position="center",
+            width_mult=8,
+        )
+        self.state_menu_items=[
+            {
+                "viewclass": "OneLineListItem",
+                
+                "text": f"{i[0]}",
+                "height": dp(56),
+                "on_release": lambda x=f"{i[0]}": self.set_state_item(x),
+            } for i in res
+        ]
+        self.state_menu = MDDropdownMenu(
+            caller=self.ids.state,
+            items=self.state_menu_items,
+            position="center",
+            width_mult=8,
+        )
+
+        self.state_menu.bind()
+        
+
         
         self.place_order_confirm_dialog=MDDialog(
             title="Confirm Place Order",
@@ -72,6 +103,41 @@ class User_Screen(Screen):
                     ),
                 ],
         )
+
+    def set_state_item(self, text_item):
+        self.ids.state.set_item(text_item)
+        self.ids.state.text=text_item
+        self.state_menu.dismiss()
+
+        self.ids.city.text="City"
+        
+
+        sql=f"Select Distinct city_name from cities Where city_state='{text_item}' "
+        cursor.execute(sql)
+        cities=cursor.fetchall()
+
+        self.city_menu_items=[
+            {
+                "viewclass": "OneLineListItem",
+                
+                "text": f"{i[0]}",
+                "height": dp(56),
+                "on_release": lambda x=f"{i[0]}": self.set_city_item(x),
+            } for i in cities
+        ]
+        self.city_menu = MDDropdownMenu(
+            caller=self.ids.city,
+            items=self.city_menu_items,
+            position="center",
+            width_mult=8,
+        )
+
+        self.city_menu.bind()
+
+    def set_city_item(self, text_item):
+        self.ids.city.set_item(text_item)
+        self.ids.city.text=text_item
+        self.city_menu.dismiss()
 
     def logout(self,*args):
         self.parent.current="login"
@@ -206,6 +272,7 @@ City : {res[7]}  State : {res[8]} \n Pincode : {res[9]}"""
         self.ids.place_order_btn.disabled=True
         self.ids.cart_total.text="Total : Rs 0"
         self.ids.orders_sm.current="restaurant"
+        self.ids.search_food_res.text=""
 
     def change_quantity(self,change,quantity_widget,*args):
         
@@ -404,12 +471,46 @@ City : {res[7]}  State : {res[8]} \n Pincode : {res[9]}"""
 
 
     def search(self,text,*args):
-        pass
+        if text:
+            self.ids.res_food_list.clear_widgets()
+            sql=f"Select * from food_items Where F_Name Like '{text}%' and City='{self.city}' and State='{self.state}'"
+            cursor.execute(sql)
+            res=cursor.fetchall()
+
+            for item in res:
+
+                c=FoodCard(orientation='horizontal',elevation=40,ripple_behavior=True,size_hint=(1,None),height="100dp",on_release=partial(self.select_quantity,item[0],item[1],item[2],item[3],item[4],item[5]))
+
+
+                c.add_widget(Image(texture=CoreImage(BytesIO(item[5]),ext="jpg").texture,size_hint=(0.9,0.9 ),allow_stretch=True))
+                c.add_widget(MDLabel(text=str(item[1]),halign="center",theme_text_color="Custom",text_color=(1,1,1,1),font_style="H6"))
+
+                if item[6]=="1":
+                    c.add_widget(Image(source="images/veg.png"))
+                elif item[6]=="0":
+                    c.add_widget(Image(source="images/nonveg.png"))
+                self.ids.res_food_list.add_widget(c)
+
+            mydb.commit()
+            sql=f"Select Restaurant_Id,Name,Image from restaurants Where Name Like '{text}%' and City='{self.city}' and State='{self.state}'"
+            cursor.execute(sql)
+            res=cursor.fetchall()
+
+            for i in res:
+                c=MyCard(orientation='horizontal',elevation=40,ripple_behavior=True,size_hint=(1,None),height="100dp",on_release=partial(self.display_food_menu,str(i[0])))
+
+
+                c.add_widget(Image(texture=CoreImage(BytesIO(i[2]),ext="jpg").texture,size_hint=(0.9,0.9 ),allow_stretch=True))
+                c.add_widget(MDLabel(text=str(i[1]),halign="center",theme_text_color="Custom",text_color=(1,1,1,1),font_style="H6"))
+
+                self.ids.res_food_list.add_widget(c)
+        else:
+            self.display_restaurants()
     def display_restaurants(self,*args):
         self.ids.res_food_list.clear_widgets()
         
         mydb.commit()
-        sql="Select Restaurant_Id,Name,Image from restaurants"
+        sql=f"Select Restaurant_Id,Name,Image from restaurants Where City='{self.city}' and State='{self.state}'"
         cursor.execute(sql)
         res=cursor.fetchall()
 
@@ -423,10 +524,28 @@ City : {res[7]}  State : {res[8]} \n Pincode : {res[9]}"""
 
             self.ids.res_food_list.add_widget(c)
 
+    def load_address_screen(self,*args):
+        mydb.commit()
+        sql=f"Select Address,State,City,Pincode from users Where Id='{self.userid}'"
+        cursor.execute(sql)
+        res=cursor.fetchall()
 
+        self.ids.address.text=res[0][0]
+        self.set_state_item(res[0][1])
+        self.set_city_item(res[0][2])
+        self.ids.pincode.text=str(res[0][3])
+
+        self.ids.account_manager.current="address_screen"
         
-    
+    def save_address(self,*args):
+        if self.ids.address.text and self.ids.pincode.text and self.ids.city.text!="City" and self.ids.state.text!="State":
+            sql=f"Update users set Address='{self.ids.address.text}',City='{self.ids.city.text}',State='{self.ids.state.text}',Pincode='{self.ids.pincode.text}' Where Id='{self.userid}'"
+            cursor.execute(sql)
+            mydb.commit()
 
+            toast("Saved successfully")
+        else:
+            toast("Please Fill All Details")
         
 
 class MainApp(MDApp):

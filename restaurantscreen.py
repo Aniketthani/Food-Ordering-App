@@ -37,6 +37,8 @@ class Restaurant_Screen(Screen):
     veg=True
     item_list=[]
     item_selected=""
+    city=StringProperty()
+    state=StringProperty()
     
     def __init__(self,**kwargs):
         super(Restaurant_Screen,self).__init__(**kwargs)
@@ -297,10 +299,15 @@ City : {res[7]}  State : {res[8]} \n Pincode : {res[9]}"""
         if self.ids.f_name.text and self.ids.f_desc.text and self.ids.f_price.text and (self.ids.veg.active or self.ids.nonveg.active) and self.ids.field.text!="Category":
             if self.ids.f_price.text.isnumeric():
                 if self.image_path :
+                    sql=f"Select City,State from restaurants Where Restaurant_Id='{self.Id}'"
+                    cursor.execute(sql)
+                    city=cursor.fetchall()[0]
+                    state=city[1]
+                    city=city[0]
                     photo=self.convert_to_binary(self.image_path)
-                    sql="Insert Into food_items (F_Name,Restaurant_Id,Price,Description,Image,Veg,Category) Values(%s,%s,%s,%s,%s,%s,%s)"
+                    sql="Insert Into food_items (F_Name,Restaurant_Id,Price,Description,Image,Veg,Category,City,State) Values(%s,%s,%s,%s,%s,%s,%s,%s,%s)"
 
-                    cursor.execute(sql,(self.ids.f_name.text,self.Id,self.ids.f_price.text,self.ids.f_desc.text,photo,int(self.veg),self.item_selected))
+                    cursor.execute(sql,(self.ids.f_name.text,self.Id,self.ids.f_price.text,self.ids.f_desc.text,photo,int(self.veg),self.item_selected,city,state))
                     mydb.commit()
                     toast("Food Item Added Successfully")
                     self.ids.f_name.text=""

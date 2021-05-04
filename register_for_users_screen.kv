@@ -47,22 +47,25 @@
                 pos_hint: {'center_x':0.5 , 'center_y':0.5 }
                 write_tab:False
                 size_hint_y:0.1
-            MDTextFieldRound:
-                id:city
-                hint_text:"City"
-                icon_right:'home-city'
-                size_hint_x: 0.7
-                pos_hint: {'center_x':0.5 , 'center_y':0.5 }
-                write_tab:False
-                size_hint_y:0.1
-            MDTextFieldRound:
+            
+            MDDropDownItem:
                 id:state
-                hint_text:"State"
-                icon_right:'city-variant'
+                text:"State"
+                
                 size_hint_x: 0.7
                 pos_hint: {'center_x':0.5 , 'center_y':0.5 }
-                write_tab:False
-                size_hint_y:0.1
+                
+                #size_hint_y:0.1
+                on_release:root.state_menu.open()
+            MDDropDownItem:
+                id:city
+                text:"City"
+                
+                size_hint_x: 0.7
+                pos_hint: {'center_x':0.5 }
+                
+                #size_hint_y:0.1
+                on_release:root.city_menu.open()
 
             MDTextFieldRound:
                 id:pincode
