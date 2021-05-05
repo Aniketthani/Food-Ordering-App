@@ -2,11 +2,13 @@ from kivymd.app import MDApp
 from kivy.uix.screenmanager import Screen
 from kivy.lang import Builder
 from hashlib import sha256
-from config import connect_to_database
+from config import pass_cursor
 from kivymd.toast import toast
+from userscreen import User_Screen
+from restaurantscreen import Restaurant_Screen
 
 
-cursor,mydb=connect_to_database()
+cursor,mydb=pass_cursor()
 
 
 Builder.load_file('loginscreen.kv')
@@ -19,6 +21,10 @@ class LoginScreen(Screen):
         self.ids.password.text=""
         self.ids.message.text=""
 
+        self.parent.userscreen=User_Screen(name='userscreen')
+        self.parent.add_widget(self.parent.userscreen)
+
+        
         self.parent.current="userscreen"
         self.parent.userscreen.userid=str(u_id)
         self.parent.userscreen.username=u_name
@@ -36,6 +42,9 @@ class LoginScreen(Screen):
         self.ids.password.text=""
         self.ids.message.text=""
 
+        self.parent.restaurantscreen=Restaurant_Screen(name='restaurantscreen')
+        
+        self.parent.add_widget(self.parent.restaurantscreen)
         self.parent.current="restaurantscreen"
         self.parent.restaurantscreen.r_name=name
         self.parent.restaurantscreen.Id=str(Id)

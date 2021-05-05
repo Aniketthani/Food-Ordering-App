@@ -3,7 +3,7 @@ from kivymd.app import MDApp
 from kivy.uix.screenmanager import Screen
 from kivy.lang import Builder
 from kivy.uix.boxlayout import BoxLayout
-from config import connect_to_database
+from config import pass_cursor
 from kivymd.uix.card import MDCard
 from kivy.graphics import Color,RoundedRectangle
 from kivy.uix.image import Image
@@ -23,11 +23,14 @@ from datetime import datetime,timedelta
 from datatables import MDDataTable
 from kivy.metrics import dp
 from kivymd.uix.menu import MDDropdownMenu
+from kivy.clock import Clock
+#from loginscreen import pass_cursor
 
 
 
-cursor,mydb=connect_to_database()
 
+cursor,mydb=pass_cursor()
+rest_list=[]
 Builder.load_file('userscreen.kv')
 
 class MyCard(MDCard):
@@ -470,10 +473,45 @@ City : {res[7]}  State : {res[8]} \n Pincode : {res[9]}"""
             self.ids.cart_total.text=f"[b]Total : Rs {self.total}[/b]"
 
 
+    
+    def display_restaurants(self,*args):
+        global rest_list
+        double=False
+        self.ids.res_food_list.clear_widgets()
+        
+        if not rest_list:
+            double=True
+            
+            mydb.commit()
+            sql=f"Select Restaurant_Id,Name,Image from restaurants Where City='{self.city}' and State='{self.state}'"
+            cursor.execute(sql)
+            res=cursor.fetchall()
+            rest_list=res[:]
+        else:
+            double=False
+            
+        
+        
+
+
+        
+        for i in rest_list:
+            c=MyCard(orientation='horizontal',elevation=40,ripple_behavior=True,size_hint=(1,None),height="100dp",on_release=partial(self.display_food_menu,str(i[0])))
+            
+            
+            c.add_widget(Image(texture=CoreImage(BytesIO(i[2]),ext="jpg").texture,size_hint=(0.9,0.9 ),allow_stretch=True))
+            c.add_widget(MDLabel(text=str(i[1]),halign="center",theme_text_color="Custom",text_color=(1,1,1,1),font_style="H6"))
+
+            self.ids.res_food_list.add_widget(c)
+        if double:
+            
+            Clock.schedule_once(self.display_restaurants,0)
+
     def search(self,text,*args):
-        if text:
+        global rest_list
+        if text and len(text)>=3:
             self.ids.res_food_list.clear_widgets()
-            sql=f"Select * from food_items Where F_Name Like '{text}%' and City='{self.city}' and State='{self.state}'"
+            sql=f"Select * from food_items Where F_Name Like '%{text}%' and City='{self.city}' and State='{self.state}' LIMIT 5"
             cursor.execute(sql)
             res=cursor.fetchall()
 
@@ -491,10 +529,15 @@ City : {res[7]}  State : {res[8]} \n Pincode : {res[9]}"""
                     c.add_widget(Image(source="images/nonveg.png"))
                 self.ids.res_food_list.add_widget(c)
 
-            mydb.commit()
-            sql=f"Select Restaurant_Id,Name,Image from restaurants Where Name Like '{text}%' and City='{self.city}' and State='{self.state}'"
-            cursor.execute(sql)
-            res=cursor.fetchall()
+            #mydb.commit()
+            #sql=f"Select Restaurant_Id,Name,Image from restaurants Where Name Like '{text}%' and City='{self.city}' and State='{self.state}' LIMIT 5"
+            #cursor.execute(sql)
+            #res=cursor.fetchall()
+            res=[]
+            for r in rest_list:
+                if text.lower() in r[1].lower():
+                    res.append(r)
+            
 
             for i in res:
                 c=MyCard(orientation='horizontal',elevation=40,ripple_behavior=True,size_hint=(1,None),height="100dp",on_release=partial(self.display_food_menu,str(i[0])))
@@ -504,25 +547,8 @@ City : {res[7]}  State : {res[8]} \n Pincode : {res[9]}"""
                 c.add_widget(MDLabel(text=str(i[1]),halign="center",theme_text_color="Custom",text_color=(1,1,1,1),font_style="H6"))
 
                 self.ids.res_food_list.add_widget(c)
-        else:
+        elif not text:
             self.display_restaurants()
-    def display_restaurants(self,*args):
-        self.ids.res_food_list.clear_widgets()
-        
-        mydb.commit()
-        sql=f"Select Restaurant_Id,Name,Image from restaurants Where City='{self.city}' and State='{self.state}'"
-        cursor.execute(sql)
-        res=cursor.fetchall()
-
-        
-        for i in res:
-            c=MyCard(orientation='horizontal',elevation=40,ripple_behavior=True,size_hint=(1,None),height="100dp",on_release=partial(self.display_food_menu,str(i[0])))
-            
-            
-            c.add_widget(Image(texture=CoreImage(BytesIO(i[2]),ext="jpg").texture,size_hint=(0.9,0.9 ),allow_stretch=True))
-            c.add_widget(MDLabel(text=str(i[1]),halign="center",theme_text_color="Custom",text_color=(1,1,1,1),font_style="H6"))
-
-            self.ids.res_food_list.add_widget(c)
 
     def load_address_screen(self,*args):
         mydb.commit()

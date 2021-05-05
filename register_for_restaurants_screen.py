@@ -2,7 +2,7 @@ from kivy.core.window import Window
 from kivymd.app import MDApp
 from kivy.uix.screenmanager import Screen
 from kivy.lang import Builder
-from config import connect_to_database
+from config import pass_cursor
 import datetime
 from hashlib import sha256
 from kivymd.uix.filemanager import MDFileManager
@@ -10,14 +10,14 @@ from kivymd.toast import toast
 from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.list import OneLineListItem
 from kivy.metrics import dp
-
+#from loginscreen import pass_cursor
 try:
     from android.storage import primary_external_storage_path
     primary_ext_storage = primary_external_storage_path()
 except:
     primary_ext_storage="/"
 
-cursor,mydb=connect_to_database()
+cursor,mydb=pass_cursor()
 
 Builder.load_file('register_for_restaurants_screen.kv')
 

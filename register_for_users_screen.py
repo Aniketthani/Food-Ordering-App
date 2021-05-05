@@ -1,14 +1,14 @@
 from kivymd.app import MDApp
 from kivy.uix.screenmanager import Screen
 from kivy.lang import Builder
-from config import connect_to_database
+from config import pass_cursor
 import datetime
 from hashlib import sha256
 from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.list import OneLineListItem
 from kivy.metrics import dp
-
-cursor,mydb=connect_to_database()
+#from loginscreen import pass_cursor
+cursor,mydb=pass_cursor()
 
 Builder.load_file('register_for_users_screen.kv')
 

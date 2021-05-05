@@ -1,7 +1,7 @@
 from kivymd.app import MDApp
 from kivy.uix.screenmanager import Screen
 from kivy.lang import Builder
-from config import connect_to_database
+from config import pass_cursor
 from kivy.core.image import Image as CoreImage
 from kivy.uix.image import Image
 from io import BytesIO
@@ -14,15 +14,15 @@ from kivy.uix.boxlayout import BoxLayout
 from kivymd.uix.filemanager import MDFileManager
 from kivymd.uix.button import MDRaisedButton
 from kivymd.toast import toast
-
+#from loginscreen import pass_cursor
 try:
     from android.storage import primary_external_storage_path
     primary_ext_storage = primary_external_storage_path()
 except:
     primary_ext_storage="/"
 
-cursor,mydb=connect_to_database()
 
+cursor,mydb=pass_cursor()
 
 Builder.load_file('delete_food_item.kv')
 
@@ -72,12 +72,14 @@ class Delete_Food_Item_Screen(Screen):
         
 
     def display_food_items(self,*args):
+        global food_items_list
         self.ids.food_list.clear_widgets()
         self.ids.search_text.text=""
         sql=f"Select * from food_items Where Restaurant_Id='{self.restaurant_id}'"
         cursor.execute(sql)
         res=cursor.fetchall()
         mydb.commit()
+        food_items_list=res[:]
         
         
         for item in res:
@@ -101,10 +103,15 @@ class Delete_Food_Item_Screen(Screen):
     def search_food(self,text,*args):
         self.ids.food_list.clear_widgets()
         
-        sql=f"Select * from food_items Where F_Name Like '%{text}%'"
-        cursor.execute(sql)
-        res=cursor.fetchall()
-        mydb.commit()
+        #sql=f"Select * from food_items Where F_Name Like '%{text}%'"
+        #cursor.execute(sql)
+        #res=cursor.fetchall()
+        #mydb.commit()
+
+        res=[]
+        for i in food_items_list:
+            if text.lower() in i[1].lower():
+                res.append(i)
 
         for item in res:
             c=MDCard(orientation='horizontal',elevation=30,ripple_behavior=True,on_release=partial(self.delete_food,item[0]),size_hint=(1,None),height=self.parent.height/6)

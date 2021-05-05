@@ -6,7 +6,7 @@ from kivy.properties import ObjectProperty,StringProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivymd.uix.filemanager import MDFileManager
 from kivymd.toast import toast
-from config import connect_to_database
+from config import pass_cursor
 from edit_food_item_screen import Edit_Food_Item_Screen
 from kivymd.uix.menu import MDDropdownMenu
 from kivy.metrics import dp
@@ -15,6 +15,7 @@ from kivymd.uix.list import OneLineAvatarIconListItem,IconLeftWidget
 from functools import partial
 from datatables import MDDataTable
 from kivy.clock import Clock
+#from loginscreen import pass_cursor
 try:
     from android.storage import primary_external_storage_path
     primary_ext_storage = primary_external_storage_path()
@@ -23,7 +24,7 @@ except:
 
 
 
-cursor,mydb=connect_to_database()
+cursor,mydb=pass_cursor()
 
 Builder.load_file('restaurantscreen.kv')
 
