@@ -15,6 +15,8 @@ from kivymd.uix.list import OneLineAvatarIconListItem,IconLeftWidget
 from functools import partial
 from datatables import MDDataTable
 from kivy.clock import Clock
+import os
+from PIL import Image
 #from loginscreen import pass_cursor
 try:
     from android.storage import primary_external_storage_path
@@ -236,7 +238,8 @@ City : {res[7]}  State : {res[8]} \n Pincode : {res[9]}"""
         
         
         
-
+    def size_of_img(self,file):
+        return os.stat(file).st_size
 
     def file_manager_open(self):
         self.file_manager.show(primary_ext_storage)  # output manager to the screen
@@ -252,9 +255,16 @@ City : {res[7]}  State : {res[8]} \n Pincode : {res[9]}"""
         try:
             extension=path.split(".")[1]
             if extension=="jpg" or extension=="png" or extension=="jpeg":
-                self.image_path=path
-                self.ids.file_manager_button.text=path.split(".")[0].split("/")[-1]+"."+extension
-                self.exit_manager()
+                size=self.size_of_img(path)
+                if size<=300000:
+
+                    self.image_path=path
+                    self.ids.file_manager_button.text=path.split(".")[0].split("/")[-1]+"."+extension
+                    self.exit_manager()
+                    Image.open(path).save("out."+extension,optimized=True,quality=7)
+                    self.image_path="out."+extension
+                else:
+                    toast("Image size should not be more than 300Kb")
             else:
                 toast("please select a valid image file")
         except:
@@ -318,7 +328,9 @@ City : {res[7]}  State : {res[8]} \n Pincode : {res[9]}"""
                     self.veg=True
                     self.ids.field.text="Category"
                     self.ids.file_manager_button.text="Choose Image"
+                    os.remove(self.image_path)
                     self.image_path=""
+                    
                     
                 else:
                     toast("Please select a image")

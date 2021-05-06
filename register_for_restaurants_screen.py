@@ -10,6 +10,8 @@ from kivymd.toast import toast
 from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.list import OneLineListItem
 from kivy.metrics import dp
+import os
+from PIL import Image
 #from loginscreen import pass_cursor
 try:
     from android.storage import primary_external_storage_path
@@ -92,10 +94,14 @@ class Register_Restaurant_Screen(Screen):
         self.ids.city.set_item(text_item)
         self.ids.city.text=text_item
         self.city_menu.dismiss()
-        
+
+    def size_of_img(self,file):
+        return os.stat(file).st_size
+
     def file_manager_open(self):
         self.file_manager.show(primary_ext_storage)  # output manager to the screen
         self.manager_open = True
+
 
     def select_path(self, path):
         '''It will be called when you click on the file name
@@ -108,9 +114,17 @@ class Register_Restaurant_Screen(Screen):
         try:
             extension=path.split(".")[1]
             if extension=="jpg" or extension=="png" or extension=="jpeg":
-                self.image_path=path
-                self.ids.choose_image_button.text=path.split(".")[0].split("/")[-1]+"."+extension
-                self.exit_manager()
+                size=self.size_of_img(path)
+                if size <=300000:
+
+                    self.image_path=path
+                    self.ids.choose_image_button.text=path.split(".")[0].split("/")[-1]+"."+extension
+                    self.exit_manager()
+                    Image.open(path).save("out."+ extension,optimized=True,quality=7)
+                    self.image_path="out."+extension
+
+                else:
+                    toast("Image size should not be more than 300Kb")
 
             else:
                 toast("please select a valid image file")
@@ -166,7 +180,9 @@ class Register_Restaurant_Screen(Screen):
                             bdata=f.read()
                         cursor.execute(sql,(date,time,self.ids.name.text,self.ids.address.text,self.ids.city.text,self.ids.state.text,self.ids.pincode.text,self.ids.mobile.text,sha256(self.ids.password.text.encode()).hexdigest(),bdata))
                         mydb.commit()
+                        os.remove(self.image_path)
                         self.nav_to_login()
+                        
                     else:
                         self.ids.message.text="[color=#e40017][*][/color] Invalid Mobile Number"
                 else:
