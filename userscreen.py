@@ -511,7 +511,7 @@ City : {res[7]}  State : {res[8]} \n Pincode : {res[9]}"""
         global rest_list
         if text and len(text)>=3:
             self.ids.res_food_list.clear_widgets()
-            sql=f"Select * from food_items Where F_Name Like '%{text}%' and City='{self.city}' and State='{self.state}' LIMIT 5"
+            sql=f"Select * from food_items Where (F_Name Like '%{text}%' OR Category Like '%{text}%') and City='{self.city}' and State='{self.state}' LIMIT 10"
             cursor.execute(sql)
             res=cursor.fetchall()
 
