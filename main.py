@@ -11,6 +11,7 @@ from restaurantscreen import Restaurant_Screen
 from kivymd.uix.picker import MDDatePicker
 from config import pass_cursor
 from kivymd.uix.label import MDLabel
+from kivy.clock import Clock
 
 try:
     from android.permissions import request_permissions, Permission
@@ -53,6 +54,10 @@ class MainApp(MDApp):
                 self.sm.current="login"
             else:
                 if matter.split("-")[2]=="r":
+                    #try:
+                    #    self.sm.remove_widget(self.sm.restaurantscreen)
+                    #except:
+                    #    pass
                     self.sm.restaurantscreen=Restaurant_Screen(name='restaurantscreen')
         
                     self.sm.add_widget(self.sm.restaurantscreen)
@@ -64,8 +69,13 @@ class MainApp(MDApp):
                     self.sm.restaurantscreen.load_order_list()
                     self.sm.datepicker.bind(on_save=self.sm.restaurantscreen.save_date,on_cancel=self.sm.restaurantscreen.cancel_date)
                 elif matter.split("-")[2]=="u":
+                    #try:
+                    #    self.sm.remove_widget(self.sm.userscreen)
+                    #except:
+                    #    pass
                     self.sm.userscreen=User_Screen(name='userscreen')
                     self.sm.add_widget(self.sm.userscreen)
+                    #Clock.schedule_once(self.sm.userscreen.display_restaurants,0)
                     self.sm.current="userscreen"
                     self.sm.userscreen.userid=str(matter.split("-")[0])
                     self.sm.userscreen.username=matter.split("-")[1]

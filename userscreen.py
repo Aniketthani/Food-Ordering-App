@@ -333,7 +333,7 @@ City : {res[7]}  State : {res[8]} \n Pincode : {res[9]}"""
             
             
             c.add_widget(Image(texture=CoreImage(BytesIO(item[5]),ext="jpg").texture,size_hint=(0.9,0.9 ),allow_stretch=True))
-            c.add_widget(MDLabel(text=str(item[1]),halign="center",theme_text_color="Custom",text_color=(1,1,1,1),font_style="H6"))
+            c.add_widget(MDLabel(text="[b]"+str(item[1])+"[/b]",halign="center",theme_text_color="Custom",text_color=(1,1,1,1),markup=True))
 
             if item[6]=="1":
                 c.add_widget(Image(source="images/veg.png"))
@@ -399,9 +399,9 @@ City : {res[7]}  State : {res[8]} \n Pincode : {res[9]}"""
             
             
             c.add_widget(Image(texture=CoreImage(BytesIO(self.cart[i][4]),ext="jpg").texture,size_hint=(0.9,0.9 ),allow_stretch=True))
-            c.add_widget(MDLabel(text=str(self.cart[i][0] +"\n\n" + "Rs "+str(self.cart[i][2])),halign="center",theme_text_color="Custom",text_color=(1,1,1,1),markup=True))
-            c.add_widget(MDLabel(text="Qt \n\n"+str(self.cart[i][3]),halign="center",theme_text_color="Custom",text_color=(1,1,1,1),markup=True))
-            c.add_widget(MDLabel(text="Total"+"\n\n"+"Rs "+str(self.cart[i][3]*self.cart[i][2]),halign="center",theme_text_color="Custom",text_color=(1,1,1,1),markup=True))
+            c.add_widget(MDLabel(text=str(self.cart[i][0] +"\n" + "Rs "+str(self.cart[i][2])),halign="center",theme_text_color="Custom",text_color=(1,1,1,1),markup=True))
+            c.add_widget(MDLabel(text="Qt \n"+str(self.cart[i][3]),halign="center",theme_text_color="Custom",text_color=(1,1,1,1),markup=True))
+            c.add_widget(MDLabel(text="Total"+"\n"+"Rs "+str(self.cart[i][3]*self.cart[i][2]),halign="center",theme_text_color="Custom",text_color=(1,1,1,1),markup=True))
             box.add_widget(c)
             box.add_widget(MDIconButton(icon="close-circle",theme_text_color="Custom",text_color=(0,0,0,1),user_font_size="20sp",pos_hint={'center_x':0.5 , 'center_y':0.5 },on_release=partial(self.remove_food_from_cart,i)))
             
@@ -521,7 +521,7 @@ City : {res[7]}  State : {res[8]} \n Pincode : {res[9]}"""
 
 
                 c.add_widget(Image(texture=CoreImage(BytesIO(item[5]),ext="jpg").texture,size_hint=(0.9,0.9 ),allow_stretch=True))
-                c.add_widget(MDLabel(text=str(item[1]),halign="center",theme_text_color="Custom",text_color=(1,1,1,1),font_style="H6"))
+                c.add_widget(MDLabel(text="[b]"+str(item[1])+"[/b]",halign="center",theme_text_color="Custom",text_color=(1,1,1,1),markup=True))
 
                 if item[6]=="1":
                     c.add_widget(Image(source="images/veg.png"))

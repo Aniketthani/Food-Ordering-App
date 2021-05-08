@@ -6,6 +6,7 @@ from config import pass_cursor
 from kivymd.toast import toast
 from userscreen import User_Screen
 from restaurantscreen import Restaurant_Screen
+from kivy.clock import Clock
 
 
 cursor,mydb=pass_cursor()
@@ -21,16 +22,22 @@ class LoginScreen(Screen):
         self.ids.password.text=""
         self.ids.message.text=""
 
+        try:
+            self.parent.remove_widget(self.parent.userscreen)
+        except:
+            pass
+
         self.parent.userscreen=User_Screen(name='userscreen')
         self.parent.add_widget(self.parent.userscreen)
 
-        
+        #Clock.schedule_once(self.parent.userscreen.display_restaurants,0)
         self.parent.current="userscreen"
         self.parent.userscreen.userid=str(u_id)
         self.parent.userscreen.username=u_name
         self.parent.userscreen.city=city
         self.parent.userscreen.state=state
         self.parent.userscreen.display_restaurants()
+        
 
         with open("session.txt","w") as f:
             matter=f"""{u_id}-{u_name}-u-{city}-{state}"""
@@ -41,6 +48,11 @@ class LoginScreen(Screen):
         self.ids.mobile.text=""
         self.ids.password.text=""
         self.ids.message.text=""
+
+        try:
+            self.parent.remove_widget(self.parent.restaurantscreen)
+        except:
+            pass
 
         self.parent.restaurantscreen=Restaurant_Screen(name='restaurantscreen')
         
